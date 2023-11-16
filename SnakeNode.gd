@@ -13,7 +13,7 @@ var __world_size: Vector2i
 var __has_child = false
 
 # direction of movement
-var __direction = Vector2i.UP
+var direction = Vector2i.UP
 
 # used to propergate the action the children
 var __next_actioncode = ''
@@ -46,7 +46,7 @@ func initialise(
 	grid_margin, 
 	world_offset_pix, 
 	initial_grid=Vector2(0,0), 
-	direction=Vector2.UP, 
+	initial_direction=Vector2.UP, 
 	new_idx=0, 
 	upstream=false
 	):
@@ -55,7 +55,7 @@ func initialise(
 	"""
 	__grid_size = grid_size
 	__world_size = world_size
-	__direction = direction
+	direction = initial_direction
 	__grid_margin = grid_margin
 	__world_offset_pix = world_offset_pix
 	
@@ -97,13 +97,13 @@ func action(actioncode: String):
 	var new_direction: Vector2i
 
 	if actioncode == 'up':
-		new_direction = __direction
+		new_direction = direction
 		
 	elif actioncode == 'left':
-		new_direction = Vector2i(__direction.y, -__direction.x)
+		new_direction = Vector2i(direction.y, -direction.x)
 
 	elif actioncode == 'right':
-		new_direction = Vector2i(-__direction.y, __direction.x)
+		new_direction = Vector2i(-direction.y, direction.x)
 		
 	elif actioncode == '':
 		return
@@ -116,7 +116,7 @@ func action(actioncode: String):
 		if pending_lengthen: 
 			__lengthen()
 			
-		__direction = new_direction
+		direction = new_direction
 		grid_pos = new_grid_pos
 		_update_position(new_grid_pos)
 		performed_action.emit(actioncode)
@@ -145,7 +145,7 @@ func __lengthen():
 		__grid_margin, 
 		__world_offset_pix, 
 		grid_pos, 
-		__direction, 
+		direction, 
 		idx+1, 
 		self
 	)

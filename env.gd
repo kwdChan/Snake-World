@@ -16,10 +16,11 @@ var all_snakes = []
 
 func _ready():
 	$SnakeSpawnTimer.start()
-	new_snake(Vector2(10, 10))
-	new_snake(Vector2(10, 10))
+
 
 	new_snake().use_action_plan(UserInputPlan)
+	new_snake(Vector2(10, 10))
+	new_snake(Vector2(10, 10))
 	draw_world_boundary()
 
 
@@ -55,7 +56,7 @@ func draw_world_boundary():
 
 func _on_snake_spawn_timer_timeout():
 	$SnakeSpawnTimer.start()
-	new_snake()
+	#new_snake()
 
 	
 

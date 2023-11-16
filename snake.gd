@@ -16,6 +16,7 @@ var _action_plan: Object
 
 var node_positions = []
 var max_idx = -1
+var direction: Vector2i
 
 signal updated_node_positions(node_positions)
 
@@ -76,6 +77,10 @@ func _on_node_update_position(idx, grid):
 		node_positions[idx] = grid
 	else: 
 		print('error')
+	
+	# TODO: very bad practice
+	if idx == 0: 	
+		direction = $SnakeNode.direction
 	
 	max_idx = max(max_idx, idx)
 	#print(node_positions)
