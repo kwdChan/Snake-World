@@ -1,8 +1,8 @@
 extends Node2D
 
 # the number of grid
-var WORLD_OFFSET_PIX = Vector2(50, 50)
-var WORLD_SIZE = Vector2(100, 50)
+var WORLD_OFFSET_PIX = Vector2(10, 10)
+var WORLD_SIZE = Vector2(50, 50)
 # pixel size of the grids
 var GRID_SIZE = 10
 # snake scene
@@ -56,7 +56,7 @@ func draw_world_boundary():
 func _on_snake_spawn_timer_timeout():
 	$SnakeSpawnTimer.start()
 	new_snake()
-	print(get_all_grids())
+
 	
 
 func get_all_grids():
