@@ -11,7 +11,6 @@ var __world_size: Vector2i
 
 # has child or parent?
 var __has_child = false
-var __has_parent = false 
 
 # direction of movement
 var __direction = Vector2i.UP
@@ -27,12 +26,17 @@ var grid_pos: Vector2i
 var random_seed = randf()
 
 var pending_lengthen = false
+
+var parent: Object
+
 # propergate to the downstream
 signal performed_action(turn, move)
 signal lengthening
 signal eaten
+signal updated_position (idx, grid)
 
 func _ready():
+	#parent = get_parent()
 	pass
 
 	
@@ -44,7 +48,7 @@ func initialise(
 	initial_grid=Vector2(0,0), 
 	direction=Vector2.UP, 
 	new_idx=0, 
-	parent=false
+	upstream=false
 	):
 	"""
 	Should be called immediately after the scene is created
@@ -58,15 +62,23 @@ func initialise(
 	grid_pos = initial_grid
 	idx = new_idx
 
-	if parent: 
-		__has_parent = true
-		parent.performed_action.connect(_propergate_parent_action)
-		parent.lengthening.connect(_propergate_lengthen_signal)
-		parent.eaten.connect(_propergate_eaten_signal)
-	
+	if upstream: 
+		upstream.performed_action.connect(_propergate_parent_action)
+		upstream.lengthening.connect(_propergate_lengthen_signal)
+		upstream.eaten.connect(_propergate_eaten_signal)
+		parent = upstream.get_parent()
+	else:
+		parent = get_parent()
 	__set_viz_size(__grid_size)
-	position = grid2pix(grid_pos)
 	
+
+	updated_position.connect(
+		parent._on_node_update_position
+	)
+	_update_position(grid_pos)
+
+	
+
 func __set_viz_size(grid_size):
 	"""
 	draw the body segment
@@ -106,7 +118,7 @@ func action(actioncode: String):
 			
 		__direction = new_direction
 		grid_pos = new_grid_pos
-		position = grid2pix(new_grid_pos)
+		_update_position(new_grid_pos)
 		performed_action.emit(actioncode)
 		
 
@@ -155,6 +167,7 @@ func _propergate_lengthen_signal():
 func _propergate_eaten_signal():
 	if __has_child:
 		eaten.emit()
+	updated_position.emit(idx, null)
 	queue_free()
 
 func grid2pix(grid):
@@ -178,3 +191,7 @@ func _on_collision(area):
 	else:
 
 		return
+
+func _update_position(grid):
+	position = grid2pix(grid)
+	updated_position.emit(idx, grid)

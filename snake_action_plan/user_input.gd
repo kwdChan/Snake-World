@@ -15,7 +15,6 @@ func _process(delta):
 		
 
 
-
 func get_next_action(snake):
 	var _next_action = next_action
 	next_action = ''

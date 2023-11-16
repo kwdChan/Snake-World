@@ -14,6 +14,11 @@ var _action_intervel = 0.1
 
 var _action_plan: Object
 
+var node_positions = []
+var max_idx = -1
+
+signal updated_node_positions(node_positions)
+
 func _ready():
 	$SnakeActionTimer.start()
 	
@@ -36,6 +41,7 @@ func initialise(
 	__world_size = world_size
 	__grid_margin = grid_margin
 	__world_offset_pix = world_offset_pix
+	
 	$SnakeNode.initialise(
 		grid_size, 
 		world_size, 
@@ -50,7 +56,9 @@ func use_action_plan(PlanClass):
 	_action_plan = PlanClass.new()
 	add_child(_action_plan)
 
-	
+func lengthen():
+	pass
+
 func _on_snake_action_timer_timeout():
 	
 	if $SnakeNode:
@@ -60,5 +68,14 @@ func _on_snake_action_timer_timeout():
 	else: 
 		queue_free()
 	
-
+func _on_node_update_position(idx, grid):
 	
+	if idx == max_idx+1:
+		node_positions.append(grid)
+	elif idx < max_idx+1:
+		node_positions[idx] = grid
+	else: 
+		print('error')
+	
+	max_idx = max(max_idx, idx)
+	#print(node_positions)

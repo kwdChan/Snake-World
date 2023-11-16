@@ -12,6 +12,8 @@ var GRID_MARGIN = 0.1
 var RandomPlan := preload("res://snake_action_plan/random.gd")
 var UserInputPlan := preload("res://snake_action_plan/user_input.gd")
 
+var all_snakes = []
+
 func _ready():
 	$SnakeSpawnTimer.start()
 	new_snake(Vector2(10, 10))
@@ -36,6 +38,8 @@ func new_snake(loc=null):
 	)
 	add_child(snake)
 	snake.use_action_plan(RandomPlan)
+	all_snakes.append(snake)
+	
 	return snake
 	
 
@@ -52,4 +56,14 @@ func draw_world_boundary():
 func _on_snake_spawn_timer_timeout():
 	$SnakeSpawnTimer.start()
 	new_snake()
+	print(get_all_grids())
+	
+
+func get_all_grids():
+	var result = []
+	all_snakes = all_snakes.filter(func(x):return is_instance_valid(x))
+	for snake_ in all_snakes:
+		result.append_array(snake_.node_positions)
+	return result.filter(func(x): return (x != null))
+	
 
