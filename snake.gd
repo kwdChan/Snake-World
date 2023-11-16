@@ -16,7 +16,11 @@ var _action_plan: Object
 
 func _ready():
 	$SnakeActionTimer.start()
-
+	
+func _process(delta):
+	if Input.is_action_just_pressed("ui_down"):
+		if $SnakeNode:
+			$SnakeNode._propergate_lengthen_signal()
 
 func initialise(
 		grid_size, 

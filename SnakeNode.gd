@@ -137,8 +137,11 @@ func __lengthen():
 		idx+1, 
 		self
 	)
+	__child.eaten.connect(_on_child_eaten)
 	add_sibling(__child)
-	
+
+func _on_child_eaten():
+	__has_child = false
 
 func _propergate_lengthen_signal():
 	"""
