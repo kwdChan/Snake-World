@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://brrwiq7nobiv8"]
+
+[ext_resource type="Script" path="res://SnakeNode.gd" id="1_7bh78"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q4pd0"]
+size = Vector2(1, 1)
+
+[node name="SnakeNode" type="Area2D"]
+script = ExtResource("1_7bh78")
+
+[node name="SnakeViz" type="Polygon2D" parent="."]
+
+[node name="SnakeCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_q4pd0")
+
+[connection signal="area_entered" from="." to="." method="_on_collision"]
