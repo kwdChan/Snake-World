@@ -39,6 +39,7 @@ func new_snake(loc=null):
 	snake.initialise(
 		self, 
 		loc, 
+		Color.from_hsv(randf(), 1.0, 1.0, 1.0)
 	)
 	add_child(snake)
 	snake.use_action_plan(ACTION_PLANS.Random)

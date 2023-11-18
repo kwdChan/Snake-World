@@ -13,9 +13,11 @@ var _env: Types.Env
 
 var nodes: Array[Types.SnakeNode] = []
 
-var node_positions = []
-
-var max_idx: int = -1
+var colour: Color:
+	set(value):
+		colour = value
+		for node_ in nodes:
+			node_.update_colour()
 
 func _ready():
 	$SnakeActionTimer.start()
@@ -28,12 +30,15 @@ func _process(_delta):
 func initialise(
 		env, 
 		initial_grid = Vector2(0, 0), 
+		initial_colour = Color.from_hsv(0.5, 1, 1)
 	):
 	"""
 	Should be called immediately after the scene is created
 	"""
 	_env = env 
 	var new_node = SNAKE_SCENE.instantiate()
+	colour = initial_colour
+	print(initial_colour)
 	new_node.initialise(
 		self, 
 		env, 
@@ -42,7 +47,7 @@ func initialise(
 	nodes.append(new_node)
 	add_child(new_node)
 
-	
+
 func use_action_plan(PlanClass):
 
 	_action_plan = PlanClass.new()
@@ -56,7 +61,6 @@ func _on_node_eaten(idx):
 
 func add_new_node(new_node: Types.SnakeNode):
 	nodes.append(new_node)
-	
 	
 func _on_snake_action_timer_timeout():
 	
@@ -76,6 +80,8 @@ func get_body_grids():
 
 func _on_eat(obj: Object):
 	print(obj)
+	
+
 
 
 func to_perspective(grids):

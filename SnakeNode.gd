@@ -24,9 +24,6 @@ var idx: int:
 var direction: Vector2i
 var grid_pos: Vector2i
 
-## To deprecate
-var random_seed = randf()
-
 ## lengthen happens as the node moves
 var _pending_lengthen = false
 
@@ -39,6 +36,9 @@ var _downstream: SnakeNode = null
 var _env: Types.Env 
 var _snake: Types.Snake 
 
+var colour: Color:
+	get:
+		return _snake.colour
 
 func initialise(
 	snake: Types.Snake, 
@@ -67,14 +67,19 @@ func initialise(
 	eaten.connect(snake._on_node_eaten)
 	ate.connect(snake._on_eat)
 	_update_position(grid_pos)
+	update_colour()
 
-
+	
+func update_colour():
+	$SnakeViz.set_color(colour)
+	
+	
 func __set_viz_size():
 	"""
 	draw the body segment
 	"""
 	var half_inner_size = (_env.WORLD_PARAMS.GRID_SIZE_PIX * (1-_env.WORLD_PARAMS.GRID_MARGIN))/2
-
+	
 	$SnakeViz.polygon = PackedVector2Array([
 		Vector2(-half_inner_size, -half_inner_size), 
 		Vector2( half_inner_size, -half_inner_size), 
