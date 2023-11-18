@@ -62,12 +62,11 @@ func _on_snake_spawn_timer_timeout():
 	new_snake()
 
 	
-
 func get_all_grids():
 	var result = []
 	all_snakes = all_snakes.filter(func(x):return is_instance_valid(x))
 	for snake_ in all_snakes:
-		result.append_array(snake_.node_positions)
+		result.append_array(snake_.get_body_grids())
 	return result.filter(func(x): return (x != null))
 	
 

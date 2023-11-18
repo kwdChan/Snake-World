@@ -2,13 +2,15 @@ class_name SnakeNode
 extends Area2D
 
 ## propergate to the downstream
-signal performed_action(turn, move)
+signal performed_action(action: Types.Action)
 signal lengthening
-signal updated_position (idx, grid)
+#signal updated_position (idx, grid)
 
-
-## send to the upstream
+## send to the upstream and snake
 signal eaten(idx)
+
+## send to snake
+signal ate(obj: Object)
 
 ## count upstream (bad idea?)
 var idx: int:
@@ -62,11 +64,8 @@ func initialise(
 
 	__set_viz_size()
 	
-
-	updated_position.connect(
-		_snake._on_node_update_position
-	)
-	eaten.connect(snake._on_node_hit)
+	eaten.connect(snake._on_node_eaten)
+	ate.connect(snake._on_eat)
 	_update_position(grid_pos)
 
 
@@ -116,7 +115,8 @@ func action(actioncode: Types.Action):
 func _propergate_parent_action(action: Types.Action):
 	action(_next_action)
 	_next_action = action
-	
+
+
 func __lengthen():
 	"""
 	Add a child to this exact node
@@ -134,7 +134,7 @@ func __lengthen():
 		self
 	)
 	_downstream.eaten.connect(_on_child_eaten)
-
+	_snake.add_new_node(_downstream)
 	add_sibling(_downstream)
 	
 
@@ -153,7 +153,7 @@ func _propergate_lengthen_signal():
 func _propergate_eaten_signal(_idx):
 
 	eaten.emit(idx)
-	updated_position.emit(idx, null)
+	#updated_position.emit(idx, null)
 	queue_free()
 
 func grid2pix(grid):
@@ -172,6 +172,7 @@ func _on_collision(area):
 		
 		area._propergate_eaten_signal(idx)
 		_propergate_lengthen_signal()
+		ate.emit(area)
 		
 	elif (idx ==  area.idx) and (idx == 0):
 		area._propergate_eaten_signal(idx)
@@ -181,4 +182,4 @@ func _on_collision(area):
 
 func _update_position(grid):
 	position = grid2pix(grid)
-	updated_position.emit(idx, grid)
+	#updated_position.emit(idx, grid)

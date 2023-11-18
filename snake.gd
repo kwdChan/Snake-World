@@ -48,30 +48,34 @@ func use_action_plan(PlanClass):
 	_action_plan = PlanClass.new()
 	add_child(_action_plan)
 	
-
-func lengthen():
-	pass
-	
-func _on_node_hit(idx):
+func _on_node_eaten(idx):
 	if idx == 0:
 		queue_free()
+	
+	nodes = nodes.filter(func (x): return (x.idx!=idx))
 
+func add_new_node(new_node: Types.SnakeNode):
+	nodes.append(new_node)
+	
+	
 func _on_snake_action_timer_timeout():
 	
 	nodes[0].action(_action_plan.get_next_action(self))
 	$SnakeActionTimer.set_wait_time(_action_intervel)
 	$SnakeActionTimer.start()
 
-func _on_node_update_position(idx, grid):
+
+func get_body_grids():
 	
-	if idx == max_idx+1:
-		node_positions.append(grid)
-	elif idx < max_idx+1:
-		node_positions[idx] = grid
-	else: 
-		print('error')
-	
-	max_idx = max(max_idx, idx)
+	var pos: Array[Vector2i] = []
+	# TODO: safer to check if the node is valid
+	for node_ in nodes:
+		pos.append(node_.grid_pos)
+		
+	return pos
+
+func _on_eat(obj: Object):
+	print(obj)
 
 
 func to_perspective(grids):
