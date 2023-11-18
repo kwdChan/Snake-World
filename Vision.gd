@@ -1,5 +1,5 @@
 extends Node2D
-var _vision_offset_pix = Vector2(800, 300)
+var _vision_offset_pix = Vector2(0, 0)
 var _vision_grid_pix = 5
 var _grids_to_draw = []
 

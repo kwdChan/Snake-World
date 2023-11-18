@@ -16,10 +16,10 @@ script = ExtResource("1_1l1ld")
 
 [node name="SnakeTable" type="Tree" parent="."]
 layout_mode = 0
-offset_left = 2.0
-offset_top = 3.0
-offset_right = 212.0
-offset_bottom = 370.0
+offset_left = 540.0
+offset_top = 20.0
+offset_right = 750.0
+offset_bottom = 387.0
 columns = 3
 column_titles_visible = true
 allow_reselect = true
@@ -28,7 +28,8 @@ scroll_horizontal_enabled = false
 script = ExtResource("2_4x04g")
 
 [node name="Env" parent="." instance=ExtResource("1_w022d")]
-position = Vector2(100, 60)
+position = Vector2(20, 20)
 
 [node name="Vision" type="Node2D" parent="."]
+position = Vector2(987, 277)
 script = ExtResource("2_7ybtq")
