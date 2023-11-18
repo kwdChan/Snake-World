@@ -6,8 +6,9 @@ signal performed_action(turn, move)
 signal lengthening
 signal updated_position (idx, grid)
 
+
 ## send to the upstream
-signal eaten
+signal eaten(idx)
 
 ## count upstream (bad idea?)
 var idx: int:
@@ -38,8 +39,8 @@ var _snake: Types.Snake
 
 
 func initialise(
-	snake, 
-	env, 
+	snake: Types.Snake, 
+	env: Types.Env, 
 	initial_grid=Vector2(0,0), 
 	initial_direction=Vector2.UP, 
 	upstream=false
@@ -65,9 +66,9 @@ func initialise(
 	updated_position.connect(
 		_snake._on_node_update_position
 	)
+	eaten.connect(snake._on_node_hit)
 	_update_position(grid_pos)
 
-	
 
 func __set_viz_size():
 	"""
@@ -137,7 +138,7 @@ func __lengthen():
 	add_sibling(_downstream)
 	
 
-func _on_child_eaten():
+func _on_child_eaten(_idx):
 	_downstream = null
 
 func _propergate_lengthen_signal():
@@ -149,9 +150,9 @@ func _propergate_lengthen_signal():
 	else: 
 		lengthening.emit()
 
-func _propergate_eaten_signal():
+func _propergate_eaten_signal(_idx):
 
-	eaten.emit()
+	eaten.emit(idx)
 	updated_position.emit(idx, null)
 	queue_free()
 
@@ -168,13 +169,14 @@ func is_grid_inbound(grid):
 
 func _on_collision(area):
 	if idx < area.idx:
-		area._propergate_eaten_signal()
+		
+		area._propergate_eaten_signal(idx)
 		_propergate_lengthen_signal()
-	elif (idx ==  area.idx) && random_seed > area.random_seed:
-		area._propergate_eaten_signal()
-		_propergate_lengthen_signal()
-	else:
+		
+	elif (idx ==  area.idx) and (idx == 0):
+		area._propergate_eaten_signal(idx)
 
+	else:
 		return
 
 func _update_position(grid):

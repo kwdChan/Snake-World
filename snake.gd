@@ -1,25 +1,28 @@
 class_name Snake
 extends Node2D
 
-var _action_intervel = 0.1
+signal updated_node_positions(node_positions)
+
+const SNAKE_SCENE := preload('res://snake_node.tscn') as PackedScene
+
+var _action_intervel := 0.1
 
 var _action_plan: Object
 
-var _env: Object
+var _env: Types.Env
+
+var nodes: Array[Types.SnakeNode] = []
 
 var node_positions = []
-var max_idx = -1
-var direction: Vector2i
 
-signal updated_node_positions(node_positions)
+var max_idx: int = -1
 
 func _ready():
 	$SnakeActionTimer.start()
 	
 func _process(_delta):
 	if Input.is_action_just_pressed("ui_down"):
-		if $SnakeNode:
-			$SnakeNode._propergate_lengthen_signal()
+		nodes[0]._propergate_lengthen_signal()
 
 
 func initialise(
@@ -30,12 +33,15 @@ func initialise(
 	Should be called immediately after the scene is created
 	"""
 	_env = env 
-	$SnakeNode.initialise(
+	var new_node = SNAKE_SCENE.instantiate()
+	new_node.initialise(
 		self, 
 		env, 
 		initial_grid, 
 	)
-	
+	nodes.append(new_node)
+	add_child(new_node)
+
 	
 func use_action_plan(PlanClass):
 
@@ -45,16 +51,17 @@ func use_action_plan(PlanClass):
 
 func lengthen():
 	pass
+	
+func _on_node_hit(idx):
+	if idx == 0:
+		queue_free()
 
 func _on_snake_action_timer_timeout():
 	
-	if $SnakeNode:
-		$SnakeNode.action(_action_plan.get_next_action(self))
-		$SnakeActionTimer.set_wait_time(_action_intervel)
-		$SnakeActionTimer.start()
-	else: 
-		queue_free()
-	
+	nodes[0].action(_action_plan.get_next_action(self))
+	$SnakeActionTimer.set_wait_time(_action_intervel)
+	$SnakeActionTimer.start()
+
 func _on_node_update_position(idx, grid):
 	
 	if idx == max_idx+1:
@@ -64,10 +71,18 @@ func _on_node_update_position(idx, grid):
 	else: 
 		print('error')
 	
-	# TODO: very bad practice
-	if idx == 0: 	
-		direction = $SnakeNode.direction
-	
 	max_idx = max(max_idx, idx)
 
-	#print(node_positions)
+
+func to_perspective(grids):
+	var origin = nodes[0].grid_pos
+	var rotation = Vector2(nodes[0].direction).angle_to(Vector2.UP)
+	
+	var transformed: Array[Vector2i] = []
+	
+	for i in range(len(grids)):
+		var _temp = Vector2(grids[i] - origin).rotated(rotation)
+		transformed.append(Vector2i(round(_temp)))
+	
+	return transformed
+
