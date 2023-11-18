@@ -1,5 +1,6 @@
 class_name Env
 extends Node2D
+signal snake_list_change
 
 # world parameters 
 const WORLD_PARAMS = {
@@ -39,8 +40,6 @@ func get_all_snakes() -> Array[Types.Snake]:
 
 func _ready():
 	
-	position = Vector2(20, 20)
-	
 	$SnakeSpawnTimer.set_wait_time(ECO_PARAMS.FOOD_INTERVAL)
 	$SnakeSpawnTimer.start()
 	new_snake().use_action_plan(ACTION_PLANS.UserInput)
@@ -67,14 +66,14 @@ func new_snake(loc=null):
 	add_child(snake)
 	snake.use_action_plan(ACTION_PLANS.Random)
 	all_snakes.append(snake)
-
+	snake_list_change.emit()
 	#snake.dead.connect(_on_snake_dead)
 	return snake
 
 
 	
-#func _on_snake_dead(_snake: Types.Snake):
-#	pass
+func _on_snake_dead(_snake: Types.Snake):
+	snake_list_change.emit()
 	
 func new_food(loc=null):
 	var snake = SNAKE_SCENE.instantiate()

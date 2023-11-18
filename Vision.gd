@@ -32,7 +32,6 @@ func _process(_delta):
 	queue_redraw()
 	
 	
-	
 func grid2pix(grid):
 	# TODO
 	return _vision_offset_pix + Vector2((Vector2i(1,1)+grid) * _vision_grid_pix)

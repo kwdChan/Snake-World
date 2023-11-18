@@ -24,6 +24,7 @@ var colour: Color:
 			node_.update_colour()
 
 func _ready():
+	name = 'Snake'
 	$SnakeActionTimer.set_wait_time(_action_intervel)
 	$SnakeActionTimer.start()
 	
