@@ -56,7 +56,7 @@ func draw_world_boundary():
 
 func _on_snake_spawn_timer_timeout():
 	$SnakeSpawnTimer.start()
-	#new_snake()
+	new_snake()
 
 	
 

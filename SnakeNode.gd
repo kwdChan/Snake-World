@@ -165,8 +165,8 @@ func _propergate_lengthen_signal():
 		lengthening.emit()
 
 func _propergate_eaten_signal():
-	if __has_child:
-		eaten.emit()
+
+	eaten.emit()
 	updated_position.emit(idx, null)
 	queue_free()
 
