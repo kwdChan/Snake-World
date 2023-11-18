@@ -181,17 +181,17 @@ func is_grid_inbound(grid):
 
 
 func _on_collision(area):
-	print(self, area, idx, ",", area.idx)
+	#print(self, area, idx, ",", area.idx)
 	if idx < area.idx:
 		
 		area._propergate_eaten_signal(idx)
 		_propergate_lengthen_signal()
 		ate.emit(area)
 		if not idx == 0:
-			push_warning("A node with non 0 idx ate")
+			push_warning("A node with non 0 idx ate. idx: %s, area.idx %s"%[idx, area.idx])
 		
 	elif (idx ==  area.idx) and (idx == 0):
-		print(self, area)
+		#print(self, area)
 
 		area._propergate_eaten_signal(idx)
 
