@@ -19,7 +19,7 @@ func _process(_delta):
 
 
 
-func get_next_action(snake):
+func get_next_action(_snake):
 	var _next_action = next_action
 	next_action = Types.Action.STAY
 	to_turn = false

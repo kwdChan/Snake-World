@@ -12,17 +12,23 @@ signal eaten(idx)
 ## send to snake
 signal ate(obj: Object)
 
+var _env: Types.Env 
+var _snake: Types.Snake 
+
 ## count upstream (bad idea?)
 var idx: int:
 	get: 
 		if _upstream: 
 			return _upstream.idx +1 
+		elif _snake: 
+			return _snake.idx
 		else: 
 			return 0
 
 ## position and direction of movement
 var direction: Vector2i
 var grid_pos: Vector2i
+
 
 ## lengthen happens as the node moves
 var _pending_lengthen = false
@@ -33,12 +39,13 @@ var _next_action := Types.Action.STAY
 var _upstream: SnakeNode = null
 var _downstream: SnakeNode = null
 
-var _env: Types.Env 
-var _snake: Types.Snake 
-
 var colour: Color:
 	get:
 		return _snake.colour
+
+func _ready():
+	#$SnakeCollision.set_deferred("disabled", true)
+	pass
 
 func initialise(
 	snake: Types.Snake, 
@@ -68,6 +75,7 @@ func initialise(
 	ate.connect(snake._on_eat)
 	_update_position(grid_pos)
 	update_colour()
+	
 
 	
 func update_colour():
@@ -117,9 +125,9 @@ func action(actioncode: Types.Action):
 		performed_action.emit(actioncode)
 		
 
-func _propergate_parent_action(action: Types.Action):
+func _propergate_parent_action(actioncode: Types.Action):
 	action(_next_action)
-	_next_action = action
+	_next_action = actioncode
 
 
 func __lengthen():
@@ -173,13 +181,18 @@ func is_grid_inbound(grid):
 
 
 func _on_collision(area):
+	print(self, area, idx, ",", area.idx)
 	if idx < area.idx:
 		
 		area._propergate_eaten_signal(idx)
 		_propergate_lengthen_signal()
 		ate.emit(area)
+		if not idx == 0:
+			push_warning("A node with non 0 idx ate")
 		
 	elif (idx ==  area.idx) and (idx == 0):
+		print(self, area)
+
 		area._propergate_eaten_signal(idx)
 
 	else:
