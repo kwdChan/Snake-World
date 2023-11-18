@@ -1,13 +1,11 @@
 extends Control
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	var grids = $Env.get_all_grids()
 	var origin = $Env.all_snakes[0].node_positions[0]
 	var direction = $Env.all_snakes[0].direction

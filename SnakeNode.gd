@@ -1,89 +1,79 @@
+class_name SnakeNode
 extends Area2D
 
-# how much area should be filled
-var __grid_margin: float
-var __world_offset_pix: Vector2
-# in pixel
-var __grid_size: int 
-
-# x and y size (number of grids)
-var __world_size: Vector2i
-
-# has child or parent?
-var __has_child = false
-
-# direction of movement
-var direction = Vector2i.UP
-
-# used to propergate the action the children
-var __next_actioncode = ''
-
-# used to count the position 
-var idx = 0
-
-var grid_pos: Vector2i
-
-var random_seed = randf()
-
-var pending_lengthen = false
-
-var parent: Object
-
-# propergate to the downstream
+## propergate to the downstream
 signal performed_action(turn, move)
 signal lengthening
-signal eaten
 signal updated_position (idx, grid)
 
-func _ready():
-	#parent = get_parent()
-	pass
+## send to the upstream
+signal eaten
 
-	
+## count upstream (bad idea?)
+var idx: int:
+	get: 
+		if _upstream: 
+			return _upstream.idx +1 
+		else: 
+			return 0
+
+## position and direction of movement
+var direction: Vector2i
+var grid_pos: Vector2i
+
+## To deprecate
+var random_seed = randf()
+
+## lengthen happens as the node moves
+var _pending_lengthen = false
+
+## used to propergate the action the children
+var _next_action := Types.Action.STAY
+
+var _upstream: SnakeNode = null
+var _downstream: SnakeNode = null
+
+var _env: Types.Env 
+var _snake: Types.Snake 
+
+
 func initialise(
-	grid_size, 
-	world_size, 
-	grid_margin, 
-	world_offset_pix, 
+	snake, 
+	env, 
 	initial_grid=Vector2(0,0), 
 	initial_direction=Vector2.UP, 
-	new_idx=0, 
 	upstream=false
 	):
 	"""
 	Should be called immediately after the scene is created
 	"""
-	__grid_size = grid_size
-	__world_size = world_size
+	_env = env
+	_snake = snake 
 	direction = initial_direction
-	__grid_margin = grid_margin
-	__world_offset_pix = world_offset_pix
 	
 	grid_pos = initial_grid
-	idx = new_idx
 
 	if upstream: 
 		upstream.performed_action.connect(_propergate_parent_action)
 		upstream.lengthening.connect(_propergate_lengthen_signal)
 		upstream.eaten.connect(_propergate_eaten_signal)
-		parent = upstream.get_parent()
-	else:
-		parent = get_parent()
-	__set_viz_size(__grid_size)
+		_upstream = upstream
+
+	__set_viz_size()
 	
 
 	updated_position.connect(
-		parent._on_node_update_position
+		_snake._on_node_update_position
 	)
 	_update_position(grid_pos)
 
 	
 
-func __set_viz_size(grid_size):
+func __set_viz_size():
 	"""
 	draw the body segment
 	"""
-	var half_inner_size = (__grid_size*(1-__grid_margin))/2
+	var half_inner_size = (_env.WORLD_PARAMS.GRID_SIZE_PIX * (1-_env.WORLD_PARAMS.GRID_MARGIN))/2
 
 	$SnakeViz.polygon = PackedVector2Array([
 		Vector2(-half_inner_size, -half_inner_size), 
@@ -93,27 +83,27 @@ func __set_viz_size(grid_size):
 	])
 
 
-func action(actioncode: String):
+func action(actioncode: Types.Action):
 	var new_direction: Vector2i
 
-	if actioncode == 'up':
+	if actioncode == Types.Action.UP:
 		new_direction = direction
 		
-	elif actioncode == 'left':
+	elif actioncode == Types.Action.LEFT:
 		new_direction = Vector2i(direction.y, -direction.x)
 
-	elif actioncode == 'right':
+	elif actioncode == Types.Action.RIGHT:
 		new_direction = Vector2i(-direction.y, direction.x)
 		
-	elif actioncode == '':
-		return
-	else: 
-		print('unknown action: ' + actioncode)
+	elif actioncode == Types.Action.STAY:
 		return 
-		
+	else:
+		push_error("Invalid Action")
+		return 
+
 	var new_grid_pos = grid_pos + new_direction
 	if is_grid_inbound(new_grid_pos):
-		if pending_lengthen: 
+		if _pending_lengthen: 
 			__lengthen()
 			
 		direction = new_direction
@@ -122,45 +112,40 @@ func action(actioncode: String):
 		performed_action.emit(actioncode)
 		
 
-func _propergate_parent_action(actioncode):
+func _propergate_parent_action(action: Types.Action):
+	action(_next_action)
+	_next_action = action
 	
-	if __next_actioncode: 
-
-		action(__next_actioncode)
-	__next_actioncode = actioncode
-	
-
 func __lengthen():
 	"""
 	Add a child to this exact node
 	"""
-	pending_lengthen = false
-	assert (__has_child == false)
-	__has_child = true
+	_pending_lengthen = false
+	assert (not _downstream)
+
 	var scn := load('res://snake_node.tscn') as PackedScene
-	var __child = scn.instantiate()
-	__child.initialise(
-		__grid_size, 
-		__world_size, 
-		__grid_margin, 
-		__world_offset_pix, 
+	_downstream = scn.instantiate()
+	_downstream.initialise(
+		_snake, 
+		_env, 
 		grid_pos, 
 		direction, 
-		idx+1, 
 		self
 	)
-	__child.eaten.connect(_on_child_eaten)
-	add_sibling(__child)
+	_downstream.eaten.connect(_on_child_eaten)
+
+	add_sibling(_downstream)
+	
 
 func _on_child_eaten():
-	__has_child = false
+	_downstream = null
 
 func _propergate_lengthen_signal():
 	"""
 	Propergate the lengthen signal until the end
 	"""
-	if not __has_child:
-		pending_lengthen = true
+	if not _downstream:
+		_pending_lengthen = true
 	else: 
 		lengthening.emit()
 
@@ -172,11 +157,11 @@ func _propergate_eaten_signal():
 
 func grid2pix(grid):
 	# TODO
-	return __world_offset_pix + Vector2((Vector2i(1,1)+grid) * __grid_size)
+	return Vector2((Vector2i(1,1)+grid) * _env.WORLD_PARAMS.GRID_SIZE_PIX)
 
 
 func is_grid_inbound(grid):
-	var inbound1 = (__world_size.x > grid.x) && (__world_size.y > grid.y)
+	var inbound1 = (_env.WORLD_PARAMS.SIZE_GRID.x > grid.x) && (_env.WORLD_PARAMS.SIZE_GRID.y > grid.y)
 	var inbound2 = (grid.x >= 0) && (grid.y >= 0)
 	return (inbound1) && (inbound2)
 

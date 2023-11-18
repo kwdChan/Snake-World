@@ -1,26 +1,32 @@
+class_name Env
 extends Node2D
 
-# the number of grid
-var WORLD_OFFSET_PIX = Vector2(10, 10)
-var WORLD_SIZE = Vector2(50, 50)
-# pixel size of the grids
-var GRID_SIZE = 10
-# snake scene
-var SNAKE_SCENE := load("res://snake.tscn") as PackedScene
-var GRID_MARGIN = 0.1
+# world parameters 
+const WORLD_PARAMS = {
+	SIZE_GRID = Vector2(50, 50), 
+	GRID_SIZE_PIX = 10,
+	GRID_MARGIN = 0.1
+}
 
-var RandomPlan := preload("res://snake_action_plan/random.gd")
-var UserInputPlan := preload("res://snake_action_plan/user_input.gd")
+# snake scene
+const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
+
+# action plans
+const ACTION_PLANS = {
+	Random = preload("res://snake_action_plan/random.gd"), 
+	UserInput = preload("res://snake_action_plan/user_input.gd")
+}
 
 var all_snakes = []
 
 func _ready():
+	
+	position = Vector2(20, 20)
 	$SnakeSpawnTimer.start()
 
-
-	new_snake().use_action_plan(UserInputPlan)
-	new_snake(Vector2(10, 10))
-	new_snake(Vector2(10, 10))
+	new_snake().use_action_plan(ACTION_PLANS.UserInput)
+	#new_snake(Vector2(10, 10))
+	#new_snake(Vector2(10, 10))
 	draw_world_boundary()
 
 
@@ -28,17 +34,14 @@ func new_snake(loc=null):
 	var snake = SNAKE_SCENE.instantiate()
 	if not loc:
 		loc = Vector2(
-			randi_range(0, WORLD_SIZE.x-1), randi_range(0, WORLD_SIZE.y-1)
+			randi_range(0, WORLD_PARAMS.SIZE_GRID.x-1), randi_range(0, WORLD_PARAMS.SIZE_GRID.y-1)
 		)
 	snake.initialise(
-		GRID_SIZE,
-		WORLD_SIZE, 
-		GRID_MARGIN, 
-		WORLD_OFFSET_PIX, 
+		self, 
 		loc, 
 	)
 	add_child(snake)
-	snake.use_action_plan(RandomPlan)
+	snake.use_action_plan(ACTION_PLANS.Random)
 	all_snakes.append(snake)
 	
 	return snake
@@ -46,12 +49,12 @@ func new_snake(loc=null):
 
 func draw_world_boundary():
 	$WorldBoundary.polygon = PackedVector2Array([
-		WORLD_OFFSET_PIX + Vector2(0, 0), 
-		WORLD_OFFSET_PIX + Vector2((WORLD_SIZE.x+1)*GRID_SIZE, 0), 
-		WORLD_OFFSET_PIX + (WORLD_SIZE + Vector2.ONE) * GRID_SIZE, 
-		WORLD_OFFSET_PIX + Vector2(0, (WORLD_SIZE.y+1)*GRID_SIZE), 
+		Vector2(0, 0), 
+		Vector2((WORLD_PARAMS.SIZE_GRID.x+1)*WORLD_PARAMS.GRID_SIZE_PIX, 0), 
+		(WORLD_PARAMS.SIZE_GRID + Vector2.ONE) * WORLD_PARAMS.GRID_SIZE_PIX, 
+		Vector2(0, (WORLD_PARAMS.SIZE_GRID.y+1)*WORLD_PARAMS.GRID_SIZE_PIX), 
 	])
-	pass
+
 
 
 func _on_snake_spawn_timer_timeout():
