@@ -38,7 +38,7 @@ func initialise(
 	_env = env 
 	var new_node = SNAKE_SCENE.instantiate()
 	colour = initial_colour
-	print(initial_colour)
+
 	new_node.initialise(
 		self, 
 		env, 
@@ -79,8 +79,11 @@ func get_body_grids():
 	return pos
 
 func _on_eat(obj: Object):
-	print(obj)
-	
+	var food_colour: Color = obj.get("colour")
+	if food_colour:
+		var new_h: float = (food_colour.h + colour.h * (len(nodes) + 1)) / (len(nodes) + 2)
+		new_h = (new_h) - floorf(new_h)
+		colour = Color.from_hsv(new_h, 1, 1, 1)
 
 
 
