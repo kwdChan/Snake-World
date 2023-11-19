@@ -65,7 +65,7 @@ func update_row(snake: Snake):
 	
 	var icon = CanvasTexture.new()
 	
-	print(icon.get_size())
+
 	
 	#icon.set_texture_repeat(TextureRepeat.TEXTURE_REPEAT_MAX)
 	row.set_icon(2, icon)

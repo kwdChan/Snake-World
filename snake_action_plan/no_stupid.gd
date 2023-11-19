@@ -17,7 +17,7 @@ func get_non_stupid_moves(_snake):
 	var nogo_grids = _snake.to_perspective(_snake._env.world_boundry_grids)
 
 	
-	var possible_moves = _get_non_stupid_moves(nogo_grids, 1, _snake)
+	var possible_moves = _get_non_stupid_moves(nogo_grids, 1.3, _snake)
 	
 	var non_stupid_moves = _get_non_stupid_moves(body_grids+dead_grids, distance, _snake, possible_moves)
 	
