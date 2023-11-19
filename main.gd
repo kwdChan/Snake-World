@@ -1,8 +1,8 @@
 extends Control
 
 @onready var selected_snake: Snake = $Env.all_snakes[0]
-var show_edible = false
-
+var show_edible = true
+var vision_rotate = false
 func _ready():
 	pass
 
@@ -20,11 +20,13 @@ func _process(_delta):
 	if the_snake == null:
 		return 
 		
-	var grids_to_show = the_snake.to_perspective($Env.get_inedible_grids()+$Env.world_boundry_grids)
+	var grids_to_show = the_snake.to_perspective(
+		$Env.get_inedible_grids()+$Env.world_boundry_grids,
+		vision_rotate)
 	
 	if show_edible:
 		grids_to_show.append_array(
-			the_snake.to_perspective($Env.get_edible_grids())
+			the_snake.to_perspective($Env.get_edible_grids(), vision_rotate)
 		)
 		
 	$Vision.draw_grids(grids_to_show)
@@ -39,6 +41,10 @@ func _on_snake_table_item_selected():
 	selected_snake =  ($SnakeTable.get_snake_from_item($SnakeTable.get_selected()))
 
 func _on_vision_show_food_toggled(button_pressed):
-	
-	show_edible = button_pressed 
+	show_edible = not button_pressed 
+
+
+
+func _on_vision_rotate_toggled(button_pressed):
+	vision_rotate = button_pressed
 

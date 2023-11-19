@@ -37,14 +37,22 @@ position = Vector2(1214, 318)
 script = ExtResource("2_7ybtq")
 
 [node name="VisionControl" type="HBoxContainer" parent="Vision"]
-offset_left = -510.0
-offset_top = 164.0
-offset_right = -470.0
-offset_bottom = 204.0
+offset_left = -644.0
+offset_top = 145.0
+offset_right = -352.0
+offset_bottom = 185.0
+metadata/_edit_group_ = true
+
+[node name="VisionRotate" type="CheckBox" parent="Vision/VisionControl"]
+layout_mode = 2
+focus_mode = 0
+text = "Rotate With Snake"
 
 [node name="VisionShowFood" type="CheckBox" parent="Vision/VisionControl"]
 layout_mode = 2
-text = "Show Edilbe"
+focus_mode = 0
+text = "Heads Only"
 
 [connection signal="item_selected" from="SnakeTable" to="." method="_on_snake_table_item_selected"]
+[connection signal="toggled" from="Vision/VisionControl/VisionRotate" to="." method="_on_vision_rotate_toggled"]
 [connection signal="toggled" from="Vision/VisionControl/VisionShowFood" to="." method="_on_vision_show_food_toggled"]

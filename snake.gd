@@ -137,14 +137,13 @@ func hue_avg(h1, h2, h1mag=1, h2mag=1):
 		return new_angle/TAU
 	
 
-
-func to_perspective(grids: Array[Vector2i]) -> Array[Vector2i]:
+func to_perspective(grids: Array[Vector2i], to_rotate=true) -> Array[Vector2i]:
 	if not len(nodes):
 		push_warning("zero len snake")
 		return []
 	var origin = nodes[0].grid_pos
 	
-	var _rotation = Vector2(nodes[0].direction).angle_to(Vector2.UP)
+	var _rotation = Vector2(nodes[0].direction).angle_to(Vector2.UP) if to_rotate else 0
 	
 	var transformed: Array[Vector2i] = []
 	

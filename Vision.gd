@@ -14,17 +14,18 @@ func _draw():
 
 	for grid_ in _grids_to_draw:
 		_draw_grid(grid_)
+	_draw_grid(Vector2i(0,0), Color(255,0,0))
 	
 func draw_grids(grids):
 	_grids_to_draw = grids
 
 
-func _draw_grid(grid):
+func _draw_grid(grid, color=Color(1,1,1,1)):
 	
 	var pix = grid2pix(grid)
 	draw_rect(
 		Rect2(pix.x, pix.y, _vision_grid_pix,_vision_grid_pix ),
-		Color(1,1,1,1)
+		color
 	)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
