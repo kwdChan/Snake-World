@@ -13,7 +13,7 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	N_SNAKE = 15, 
+	N_SNAKE = 20, 
 	FOOD_INTERVAL = 1
 }
 
@@ -140,7 +140,7 @@ func get_inedible_grids() -> Array[Vector2i]:
 	var result:Array[Vector2i] = []
 	for food_snake_ in get_all_food_snake():
 		result.append_array(food_snake_.get_inedible_parts())
-	result.append_array(world_boundry_grids)	
+
 	return result
 
 
