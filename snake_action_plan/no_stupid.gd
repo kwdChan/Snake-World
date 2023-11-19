@@ -52,7 +52,7 @@ func _get_non_stupid_moves(avoid_grids, _distance:float, _snake, _pool=pool):
 		return possible_moves
 		
 	elif not len(possible_moves) and (_distance>1):
-		return _get_non_stupid_moves(avoid_grids, _distance-1, _snake)
+		return _get_non_stupid_moves(avoid_grids, _distance-1, _snake, _pool)
 	else:
 		return []
 		
