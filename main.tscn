@@ -20,10 +20,12 @@ offset_left = 540.0
 offset_top = 20.0
 offset_right = 920.0
 offset_bottom = 649.0
+focus_mode = 0
 columns = 3
 column_titles_visible = true
 allow_reselect = true
 hide_root = true
+select_mode = 1
 scroll_horizontal_enabled = false
 script = ExtResource("2_4x04g")
 
@@ -33,3 +35,5 @@ position = Vector2(20, 20)
 [node name="Vision" type="Node2D" parent="."]
 position = Vector2(987, 277)
 script = ExtResource("2_7ybtq")
+
+[connection signal="item_selected" from="SnakeTable" to="." method="_on_snake_table_item_selected"]

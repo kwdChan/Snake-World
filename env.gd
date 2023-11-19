@@ -13,7 +13,7 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	N_SNAKE = 50, 
+	N_SNAKE = 4, 
 	FOOD_INTERVAL = .1
 }
 

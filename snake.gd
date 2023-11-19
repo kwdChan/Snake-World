@@ -9,7 +9,7 @@ const SNAKE_SCENE := preload('res://snake_node.tscn') as PackedScene
 # if idx is not 0, it means it is food 
 var idx = 0
 
-var _action_intervel := 0.1
+var _action_intervel := 0.01
 
 var action_plan: Types.ActionPlan
 
@@ -124,13 +124,16 @@ func _on_eat(obj: Object):
 	var food_colour: Color = obj.get("colour")
 	if food_colour:
 
-		colour = Color.from_hsv(hue_avg(food_colour.h,  colour.h, 1, len(nodes)+2), 1, 1, 1)
+		colour = Color.from_hsv(hue_avg(food_colour.h,  colour.h, 1, 10), 1, 1, 1)
 		
 func hue_avg(h1, h2, h1mag=1, h2mag=1):
 	var new_angle = (Vector2.from_angle(h1*TAU)*h1mag + Vector2.from_angle(h2*TAU)*h2mag).angle()
-	if new_angle < 0:
-		return (TAU + new_angle)/TAU
+	#print(rad_to_deg(new_angle))
+	if new_angle <= 0:
+		#print(new_angle/TAU)
+		return  1 + (new_angle)/TAU
 	else: 
+		#print(new_angle/TAU)
 		return new_angle/TAU
 	
 
