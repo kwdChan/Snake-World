@@ -1,11 +1,10 @@
-extends Node
-
-const UP = Types.Action.UP
-const LEFT = Types.Action.LEFT
-const RIGHT = Types.Action.RIGHT
+extends ActionPlan
+const UP := Action.UP
+const RIGHT := Action.RIGHT
+const LEFT := Action.LEFT
 
 var pool = [UP, UP, UP, UP, UP, RIGHT, LEFT]
 
 func get_next_action(_snake):
-	return pool[randi()%len(pool)]
+	return pool.pick_random()
 	

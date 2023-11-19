@@ -11,7 +11,7 @@ var idx = 0
 
 var _action_intervel := 0.1
 
-var action_plan: Object
+var action_plan: Types.ActionPlan
 
 var _env: Types.Env
 
@@ -30,13 +30,17 @@ func _ready():
 	
 func _process(_delta):
 	if Input.is_action_just_pressed("ui_down"):
+		
+
 		# TODO: check if nodes[0] exists
 		if not idx == 0:
 			return 
+
 		if not len(nodes):
 			push_warning("zero len snake")
 			return 
 		nodes[0]._propergate_lengthen_signal()
+	
 	
 func initialise(
 		env, 
@@ -89,15 +93,13 @@ func _on_snake_action_timer_timeout():
 	$SnakeActionTimer.start()
 
 
-func get_edible_grids() -> Array[Vector2i]:
-	
+func get_edible_parts() -> Array[Vector2i]:
 	if idx > 0:
 		return [get_head_grid()]
 	else: 
-
 		return get_body_grids()
 
-func get_inedible_grids() -> Array[Vector2i]:
+func get_inedible_parts() -> Array[Vector2i]:
 	if idx > 0:
 		return get_body_grids()
 	else: 
@@ -115,8 +117,7 @@ func get_body_grids() -> Array[Vector2i]:
 		if first: 
 			first = false
 			continue
-		pos.append(node_.grid_pos)
-		
+		pos.append(node_.grid_pos)   
 	return pos
 
 func _on_eat(obj: Object):
@@ -125,7 +126,6 @@ func _on_eat(obj: Object):
 		var new_h: float = (food_colour.h + colour.h * (len(nodes)*2 + 5)) / (len(nodes)*2 + 6)
 		new_h = (new_h) - floorf(new_h)
 		colour = Color.from_hsv(new_h, 1, 1, 1)
-
 
 
 func to_perspective(grids: Array[Vector2i]) -> Array[Vector2i]:
