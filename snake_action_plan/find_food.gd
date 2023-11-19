@@ -32,7 +32,7 @@ func get_next_action(_snake) -> Action:
 	var min_dist_idx = argmin(edible_grids.map(func(g):return (abs(g.x)+abs(g.y))))
 	
 	var target:Vector2i = edible_grids[min_dist_idx]
-	print(target)
+	#print(target)
 	var allowed_moves = [Action.STAY]
 	if target.x > 0:
 		allowed_moves.append(Action.RIGHT)

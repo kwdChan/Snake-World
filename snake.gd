@@ -123,9 +123,16 @@ func get_body_grids() -> Array[Vector2i]:
 func _on_eat(obj: Object):
 	var food_colour: Color = obj.get("colour")
 	if food_colour:
-		var new_h: float = (food_colour.h + colour.h * (len(nodes)*2 + 5)) / (len(nodes)*2 + 6)
-		new_h = (new_h) - floorf(new_h)
-		colour = Color.from_hsv(new_h, 1, 1, 1)
+
+		colour = Color.from_hsv(hue_avg(food_colour.h,  colour.h, 1, len(nodes)+2), 1, 1, 1)
+		
+func hue_avg(h1, h2, h1mag=1, h2mag=1):
+	var new_angle = (Vector2.from_angle(h1*TAU)*h1mag + Vector2.from_angle(h2*TAU)*h2mag).angle()
+	if new_angle < 0:
+		return (TAU + new_angle)/TAU
+	else: 
+		return new_angle/TAU
+	
 
 
 func to_perspective(grids: Array[Vector2i]) -> Array[Vector2i]:
