@@ -13,7 +13,7 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	N_SNAKE = 30, 
+	N_SNAKE = 15, 
 	FOOD_INTERVAL = 1
 }
 
@@ -22,6 +22,7 @@ const ACTION_PLANS = {
 	Random = preload("res://snake_action_plan/random.gd"), 
 	UserInput = preload("res://snake_action_plan/user_input.gd"),
 	NoStupid = preload("res://snake_action_plan/no_stupid.gd"),
+	FindFood = preload("res://snake_action_plan/find_food.gd"),
 }
 
 var all_snakes: Array[Types.Snake] = []
@@ -86,7 +87,7 @@ func new_snake(loc=null):
 		Color.from_hsv(randf(), 1.0, 1.0, 1.0)
 	)
 	add_child(snake)
-	snake.use_action_plan(ACTION_PLANS.NoStupid)
+	snake.use_action_plan(ACTION_PLANS.FindFood)
 	all_snakes.append(snake)
 	snake_list_change.emit()
 	#snake.dead.connect(_on_snake_dead)
