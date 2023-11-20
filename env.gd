@@ -4,7 +4,7 @@ signal snake_list_change
 
 # world parameters 
 const WORLD_PARAMS = {
-	SIZE_GRID = Vector2(50, 50), 
+	SIZE_GRID = Vector2(70, 70), 
 	GRID_SIZE_PIX = 10,
 	GRID_MARGIN = 0.1
 }
@@ -45,13 +45,13 @@ func get_all_snakes() -> Array[Types.Snake]:
 
 
 func _ready():
-	
 	$SnakeSpawnTimer.set_wait_time(ECO_PARAMS.FOOD_INTERVAL)
 	$SnakeSpawnTimer.start()
 	new_snake(Vector2i(0,25)).use_action_plan(ACTION_PLANS.UserInput)
 	for i in range(ECO_PARAMS.N_SNAKE-1):
 		new_snake()
 	draw_world_boundary()
+	
 	
 	
 func _cal_world_boundry_grids():

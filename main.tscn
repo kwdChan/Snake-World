@@ -16,10 +16,10 @@ script = ExtResource("1_1l1ld")
 
 [node name="SnakeTable" type="Tree" parent="."]
 layout_mode = 0
-offset_left = 540.0
-offset_top = 20.0
-offset_right = 920.0
-offset_bottom = 452.0
+offset_left = 758.0
+offset_top = 29.0
+offset_right = 1138.0
+offset_bottom = 461.0
 focus_mode = 0
 columns = 3
 column_titles_visible = true
@@ -37,10 +37,10 @@ position = Vector2(1214, 318)
 script = ExtResource("2_7ybtq")
 
 [node name="VisionControl" type="HBoxContainer" parent="Vision"]
-offset_left = -644.0
-offset_top = 145.0
-offset_right = -352.0
-offset_bottom = 185.0
+offset_left = -411.0
+offset_top = 156.0
+offset_right = -119.0
+offset_bottom = 196.0
 metadata/_edit_group_ = true
 
 [node name="VisionRotate" type="CheckBox" parent="Vision/VisionControl"]

@@ -124,7 +124,7 @@ func _on_eat(obj: Object):
 	var food_colour: Color = obj.get("colour")
 	if food_colour:
 
-		colour = Color.from_hsv(hue_avg(food_colour.h,  colour.h, 1, 10), 1, 1, 1)
+		colour = Color.from_hsv(hue_avg(food_colour.h,  colour.h, 1, len(nodes)), 1, 1, 1)
 		
 func hue_avg(h1, h2, h1mag=1, h2mag=1):
 	var new_angle = (Vector2.from_angle(h1*TAU)*h1mag + Vector2.from_angle(h2*TAU)*h2mag).angle()
