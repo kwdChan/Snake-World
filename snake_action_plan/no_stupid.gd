@@ -1,5 +1,5 @@
 class_name NoStupidMove
-extends ActionPlan
+extends Policy
 const UP = Action.UP
 const LEFT = Action.LEFT
 const RIGHT = Action.RIGHT
@@ -8,8 +8,7 @@ var distance: float = 3
 
 var pool := [UP, UP, UP, UP, UP, LEFT, RIGHT]
 
-func get_next_action(_snake):
-	get_non_stupid_moves(_snake).pick_random()
+
 
 func get_non_stupid_moves(_snake):
 	var body_grids = _snake.to_perspective(_snake.get_body_grids())

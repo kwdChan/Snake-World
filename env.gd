@@ -13,18 +13,10 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	N_SNAKE = 0, 
-	FOOD_INTERVAL = 10
+	N_SNAKE = 30, 
+	FOOD_INTERVAL = 0.1
 }
 
-# action plans
-const ACTION_PLANS = {
-	Random = preload("res://snake_action_plan/random.gd"), 
-	UserInput = preload("res://snake_action_plan/user_input.gd"),
-	NoStupid = preload("res://snake_action_plan/no_stupid.gd"),
-	FindFood = preload("res://snake_action_plan/find_food.gd"),
-	RemoteControl = preload("res://snake_action_plan/remote_control.gd")
-}
 
 var all_snakes: Array[Types.Snake] = []
 var all_foods: Array[Types.Snake] = []
@@ -54,9 +46,9 @@ func _ready():
 	$SnakeSpawnTimer.set_wait_time(ECO_PARAMS.FOOD_INTERVAL)
 	$SnakeSpawnTimer.start()
 	
-	RemoteControl.use_for_snake(new_snake(Vector2i(25,25)), ws_client, self)
-	
-	new_snake(Vector2i(1,1)).use_action_plan(ACTION_PLANS.UserInput)
+	PolicyRemoteControl.use_for_snake(new_snake(Vector2i(25,25)), ws_client, self)
+	PolicyUserInput.use_for_snake(new_snake(Vector2i(2,2)), self)
+
 	
 	
 	
@@ -99,7 +91,8 @@ func new_snake(loc=null):
 		Color.from_hsv(randf(), 1.0, 1.0, 1.0)
 	)
 	add_child(snake)
-	snake.use_action_plan(ACTION_PLANS.FindFood)
+
+	PolicyNearestFood.use_for_snake(snake, self)
 	all_snakes.append(snake)
 	snake_list_change.emit()
 	#snake.dead.connect(_on_snake_dead)

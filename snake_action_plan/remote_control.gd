@@ -1,9 +1,9 @@
-class_name RemoteControl
-extends ActionPlan
+class_name PolicyRemoteControl
+extends Policy
 
 var ws_client: WSClient
 
-var responses: Array[Dictionary] = []
+
 
 @onready var id = str(get_instance_id())
 
@@ -12,7 +12,7 @@ func use_ws_client(_ws_client:WSClient):
 	ws_client.message_received.connect(_on_message)
 	
 
-func get_next_action(_snake: Snake):
+func step(_snake: Snake):
 	if (not ws_client.open) : 
 		return Action.STAY
 	
@@ -24,32 +24,23 @@ func get_next_action(_snake: Snake):
 		"RemoteControl",
 		id
 	)
-	var res = responses.pop_front()
-	if res:
-		var t = Time.get_ticks_msec()
-		
-		print(t - res.time)
-		return res.action
-	else:
-		return Action.STAY
+
 
 
 func _on_message(receiver_id, tag, message):
-	
-
 	if not receiver_id == id:
 		return 
 
-	responses.append({time = message.time, action = message.action})
-	
+	print(Time.get_ticks_msec() - message.time)
+	emit_signal("action_ready", message.action)
 	
 
 static func use_for_snake(_snake, _ws_client, _env):
-	var plan = RemoteControl.new()
+	var plan = PolicyRemoteControl.new()
 	
 	_env.add_child(plan)
 	plan.use_ws_client(_ws_client)
-	_snake.use_action_plan_obj(plan)
+	_snake.use_policy(plan)
 	
 	
 	

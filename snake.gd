@@ -11,7 +11,7 @@ var idx = 0
 
 var _action_intervel := 0.01
 
-var action_plan: Types.ActionPlan
+var policy: Policy
 
 var _env: Types.Env
 
@@ -64,19 +64,21 @@ func initialise(
 
 func as_food():
 	idx = 100000000000000
-	action_plan = null
+	policy = null
 
-func use_action_plan(PlanClass):
 
-	action_plan = PlanClass.new()
-	add_child(action_plan)
-	$SnakeActionTimer.start()
 	
-func use_action_plan_obj(obj: ActionPlan):
-	action_plan = obj
+func use_policy(_policy: Policy):
+	policy = _policy
+	policy.action_ready.connect(perform_action)
 	#add_child(obj)
 	$SnakeActionTimer.start()
-
+	
+func perform_action(actioncode:Types.Action):
+	if not len(nodes):
+		push_warning("zero-length snake: perform_action")
+		return 
+	nodes[0].action(actioncode)
 	
 func _on_node_eaten(node_idx):
 	if node_idx == 0:
@@ -94,8 +96,8 @@ func add_new_node(new_node: Types.SnakeNode):
 	nodes.append(new_node)
 	
 func _on_snake_action_timer_timeout():
-	if not action_plan: return 
-	nodes[0].action(action_plan.get_next_action(self))
+	if not policy: return 
+	policy.step(self)
 	$SnakeActionTimer.start()
 
 

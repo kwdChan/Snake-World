@@ -1,4 +1,5 @@
-extends ActionPlan
+class_name PolicyUserInput
+extends Policy
 
 var next_action := Action.STAY
 var to_turn: bool = false
@@ -19,9 +20,19 @@ func _process(_delta):
 
 
 
-func get_next_action(_snake):
+func step(_snake):
 	var _next_action = next_action
 	next_action = Action.STAY
 	to_turn = false
-	return _next_action
+	
+	emit_signal('action_ready', _next_action)
+	return 
+	
+
+static func use_for_snake(_snake, _env):
+	var plan = PolicyUserInput.new()
+	
+	_env.add_child(plan)
+	_snake.use_policy(plan)
+	
 	

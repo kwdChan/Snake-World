@@ -1,8 +1,10 @@
+class_name PolicyNearestFood
 extends NoStupidMove
 
 var food_distance = 200
 
-func get_next_action(_snake) -> Action:
+
+func step(_snake) :
 
 	var possible_moves = get_non_stupid_moves(_snake)
 	var possible_moves_ = possible_moves.duplicate()
@@ -26,8 +28,9 @@ func get_next_action(_snake) -> Action:
 	edible_grids = edible_grids.filter(filter)
 
 	if not len(edible_grids):
-		
-		return possible_moves.pick_random()
+	
+		emit_signal("action_ready", possible_moves.pick_random())
+		return 
 	
 	var min_dist_idx = argmin(edible_grids.map(func(g):return (abs(g.x)+abs(g.y))))
 	
@@ -44,13 +47,18 @@ func get_next_action(_snake) -> Action:
 		allowed_moves.append(Action.UP)
 		
 	if (target.x == target.y) and (target.x==0):
-		return Action.STAY
+
+		emit_signal("action_ready", Action.STAY)
+		return 
 		
 	possible_moves = possible_moves.filter(func(x): return (x in allowed_moves))
 	#print(possible_moves)
 	if not len(possible_moves):
 		print(possible_moves_)
-	return possible_moves.pick_random()
+		
+
+	emit_signal("action_ready", possible_moves.pick_random())
+	return
 	
 func argmin(array):
 	if array.size() == 0:
@@ -78,3 +86,11 @@ func argmax(array):
 			max_value = array[i]
 			max_index = i
 	return max_index
+
+
+static func use_for_snake(snake, env):
+	var plan = PolicyNearestFood.new()
+	
+	env.add_child(plan)
+	snake.use_policy(plan)
+	
