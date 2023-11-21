@@ -9,13 +9,13 @@ const SNAKE_SCENE := preload('res://snake_node.tscn') as PackedScene
 # if idx is not 0, it means it is food 
 var idx = 0
 
-var _action_intervel := 0.01
+var _action_intervel := 0.15
 
 var policy: Policy
 
-var _env: Types.Env
+var _env: Env
 
-var nodes: Array[Types.SnakeNode] = []
+var nodes: Array[SnakeNode] = []
 
 var colour: Color:
 	set(value):
@@ -29,6 +29,7 @@ func _ready():
 	$SnakeActionTimer.start()
 	
 func _process(_delta):
+
 	if Input.is_action_just_pressed("ui_down"):
 		
 
@@ -92,7 +93,7 @@ func _on_node_eaten(node_idx):
 		
 		queue_free()
 
-func add_new_node(new_node: Types.SnakeNode):
+func add_new_node(new_node: SnakeNode):
 	nodes.append(new_node)
 	
 func _on_snake_action_timer_timeout():

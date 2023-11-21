@@ -21,7 +21,7 @@ func step(_snake: Snake):
 	
 	ws_client.send(
 		JSON.stringify(data), 
-		"RemoteControl",
+		"PolicyRemoteControl",
 		id
 	)
 

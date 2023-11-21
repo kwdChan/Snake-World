@@ -13,27 +13,27 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	N_SNAKE = 30, 
-	FOOD_INTERVAL = 0.1
+	N_SNAKE = 3, 
+	FOOD_INTERVAL = 0.5
 }
 
 
-var all_snakes: Array[Types.Snake] = []
-var all_foods: Array[Types.Snake] = []
+var all_snakes: Array[Snake] = []
+var all_foods: Array[Snake] = []
 
 @onready var world_boundry_grids: Array[Vector2i] = _cal_world_boundry_grids()
 @onready var ws_client := WSClient.new()
 
 
 
-func get_all_foods() -> Array[Types.Snake]:
+func get_all_foods() -> Array[Snake]:
 	all_foods = all_foods.filter(func(x):return is_instance_valid(x))
 	return all_foods
 	
-func get_all_food_snake()-> Array[Types.Snake]:
+func get_all_food_snake()-> Array[Snake]:
 	return get_all_foods() + get_all_snakes() 
 
-func get_all_snakes() -> Array[Types.Snake]:
+func get_all_snakes() -> Array[Snake]:
 	all_snakes = all_snakes.filter(func(x):return is_instance_valid(x))
 	return all_snakes
 
@@ -100,7 +100,7 @@ func new_snake(loc=null):
 
 
 	
-func _on_snake_dead(_snake: Types.Snake):
+func _on_snake_dead(_snake: Snake):
 	snake_list_change.emit()
 	
 func new_food(loc=null):

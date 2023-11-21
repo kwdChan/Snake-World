@@ -9,11 +9,22 @@ var socket = WebSocketPeer.new()
 var state 
 var open := false
 
+
+var timer: Timer
 func _ready():
 	socket.connect_to_url("ws://localhost:8001")
+	
+	
+	# TODO: can't do faster than the frame rate? 
+	timer = Timer.new()
+	add_child(timer)
+	timer.set_wait_time(0.001)
+	timer.start()
+	timer.timeout.connect(func(): poll())
 
+	
 
-func _process(delta):
+func poll():
 	socket.poll()
 	
 	state = socket.get_ready_state()

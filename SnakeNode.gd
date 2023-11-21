@@ -12,8 +12,8 @@ signal eaten(idx)
 ## send to snake
 signal ate(obj: Object)
 
-var _env: Types.Env 
-var _snake: Types.Snake 
+var _env: Env 
+var _snake: Snake 
 
 ## count upstream (bad idea?)
 var idx: int:
@@ -48,8 +48,8 @@ func _ready():
 	pass
 
 func initialise(
-	snake: Types.Snake, 
-	env: Types.Env, 
+	snake: Snake, 
+	env: Env, 
 	initial_grid=Vector2(0,0), 
 	initial_direction=Vector2.UP, 
 	upstream=false

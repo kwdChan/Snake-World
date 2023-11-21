@@ -30,9 +30,7 @@ func _process(_delta):
 		)
 		
 	$Vision.draw_grids(grids_to_show)
-	
 
-	#print($SnakeTable.get_selected ( ) )
 	
 
 
@@ -42,8 +40,6 @@ func _on_snake_table_item_selected():
 
 func _on_vision_show_food_toggled(button_pressed):
 	show_edible = not button_pressed 
-
-
 
 func _on_vision_rotate_toggled(button_pressed):
 	vision_rotate = button_pressed
