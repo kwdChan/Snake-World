@@ -13,8 +13,8 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	N_SNAKE = 20, 
-	FOOD_INTERVAL = .1
+	N_SNAKE = 0, 
+	FOOD_INTERVAL = 10
 }
 
 # action plans
@@ -23,13 +23,16 @@ const ACTION_PLANS = {
 	UserInput = preload("res://snake_action_plan/user_input.gd"),
 	NoStupid = preload("res://snake_action_plan/no_stupid.gd"),
 	FindFood = preload("res://snake_action_plan/find_food.gd"),
+	RemoteControl = preload("res://snake_action_plan/remote_control.gd")
 }
 
 var all_snakes: Array[Types.Snake] = []
 var all_foods: Array[Types.Snake] = []
 
 @onready var world_boundry_grids: Array[Vector2i] = _cal_world_boundry_grids()
-	
+@onready var ws_client := WSClient.new()
+
+
 
 func get_all_foods() -> Array[Types.Snake]:
 	all_foods = all_foods.filter(func(x):return is_instance_valid(x))
@@ -45,9 +48,18 @@ func get_all_snakes() -> Array[Types.Snake]:
 
 
 func _ready():
+	
+	add_child(ws_client)
+	
 	$SnakeSpawnTimer.set_wait_time(ECO_PARAMS.FOOD_INTERVAL)
 	$SnakeSpawnTimer.start()
-	new_snake(Vector2i(0,25)).use_action_plan(ACTION_PLANS.UserInput)
+	
+	RemoteControl.use_for_snake(new_snake(Vector2i(25,25)), ws_client, self)
+	
+	new_snake(Vector2i(1,1)).use_action_plan(ACTION_PLANS.UserInput)
+	
+	
+	
 	for i in range(ECO_PARAMS.N_SNAKE-1):
 		new_snake()
 	draw_world_boundary()

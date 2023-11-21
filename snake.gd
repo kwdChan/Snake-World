@@ -72,6 +72,12 @@ func use_action_plan(PlanClass):
 	add_child(action_plan)
 	$SnakeActionTimer.start()
 	
+func use_action_plan_obj(obj: ActionPlan):
+	action_plan = obj
+	#add_child(obj)
+	$SnakeActionTimer.start()
+
+	
 func _on_node_eaten(node_idx):
 	if node_idx == 0:
 		dead.emit(self)
@@ -153,3 +159,15 @@ func to_perspective(grids: Array[Vector2i], to_rotate=true) -> Array[Vector2i]:
 	
 	return transformed
 
+
+	
+func get_sensory_info() -> Dictionary:
+	"""
+	text to Array[Vector2i]
+	"""
+	return {
+		body = to_perspective(get_body_grids()),
+		no_go = to_perspective(_env.world_boundry_grids),
+		edible = to_perspective(_env.get_edible_grids()),
+		inedible = to_perspective(_env.get_inedible_grids()),
+	}

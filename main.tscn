@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cvdygx7njshus"]
+[gd_scene load_steps=6 format=3 uid="uid://cvdygx7njshus"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_1l1ld"]
 [ext_resource type="PackedScene" uid="uid://g74wtsii2osk" path="res://env.tscn" id="1_w022d"]
 [ext_resource type="Script" path="res://SnakeTable.gd" id="2_4x04g"]
 [ext_resource type="Script" path="res://Vision.gd" id="2_7ybtq"]
+[ext_resource type="Script" path="res://TestButton.gd" id="5_frw82"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -53,6 +54,16 @@ layout_mode = 2
 focus_mode = 0
 text = "Heads Only"
 
+[node name="TestButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 903.0
+offset_top = 556.0
+offset_right = 941.0
+offset_bottom = 587.0
+text = "test"
+script = ExtResource("5_frw82")
+
 [connection signal="item_selected" from="SnakeTable" to="." method="_on_snake_table_item_selected"]
 [connection signal="toggled" from="Vision/VisionControl/VisionRotate" to="." method="_on_vision_rotate_toggled"]
 [connection signal="toggled" from="Vision/VisionControl/VisionShowFood" to="." method="_on_vision_show_food_toggled"]
+[connection signal="pressed" from="TestButton" to="TestButton" method="_on_pressed"]
