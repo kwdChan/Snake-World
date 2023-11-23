@@ -13,13 +13,24 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	N_SNAKE = 3, 
-	FOOD_INTERVAL = 0.5
+	FOOD_INTERVAL = 0.1
 }
 
+var N_SNAKES = {
+	PolicyDeepQLearning: 10, 
+	PolicyNearestFood: 0,
+	PolicyUserInput:1,
+}
 
 var all_snakes: Array[Snake] = []
 var all_foods: Array[Snake] = []
+
+var snakes_of_policies = {
+	PolicyDeepQLearning: [],
+	PolicyNearestFood:[],
+	PolicyUserInput: []
+}
+
 
 @onready var world_boundry_grids: Array[Vector2i] = _cal_world_boundry_grids()
 @onready var ws_client := WSClient.new()
@@ -46,17 +57,13 @@ func _ready():
 	$SnakeSpawnTimer.set_wait_time(ECO_PARAMS.FOOD_INTERVAL)
 	$SnakeSpawnTimer.start()
 	
-	PolicyRemoteControl.use_for_snake(new_snake(Vector2i(25,25)), ws_client, self)
-	PolicyUserInput.use_for_snake(new_snake(Vector2i(2,2)), self)
+	for policy in N_SNAKES:
+		for i in range(N_SNAKES[policy]):
+			new_snake(null, policy)
 
-	
-	
-	
-	for i in range(ECO_PARAMS.N_SNAKE-1):
-		new_snake()
 	draw_world_boundary()
 	
-	
+
 	
 func _cal_world_boundry_grids():
 	
@@ -81,7 +88,7 @@ func random_loc() -> Vector2:
 			randi_range(0, WORLD_PARAMS.SIZE_GRID.x-1), randi_range(0, WORLD_PARAMS.SIZE_GRID.y-1)
 		)
 
-func new_snake(loc=null):
+func new_snake(loc=null, policy = PolicyNearestFood):
 	var snake = SNAKE_SCENE.instantiate()
 	if loc == null:
 		loc = random_loc()
@@ -92,16 +99,24 @@ func new_snake(loc=null):
 	)
 	add_child(snake)
 
-	PolicyNearestFood.use_for_snake(snake, self)
+	policy.use_for_snake(snake, self, {ws_client=ws_client})
+	
+	snakes_of_policies[policy].append(snake)
+	
 	all_snakes.append(snake)
 	snake_list_change.emit()
-	#snake.dead.connect(_on_snake_dead)
+	snake.dead.connect(_on_snake_dead)
 	return snake
 
 
 	
+	
+
 func _on_snake_dead(_snake: Snake):
-	snake_list_change.emit()
+	new_snake(null, _snake.policy.get_script())
+	
+	
+	
 	
 func new_food(loc=null):
 	var snake = SNAKE_SCENE.instantiate()
@@ -128,9 +143,8 @@ func draw_world_boundary():
 
 
 func _on_snake_spawn_timer_timeout():
+	
 
-	if len(all_snakes) < ECO_PARAMS.N_SNAKE:
-		new_snake()
 	new_food()
 	$SnakeSpawnTimer.start()
 

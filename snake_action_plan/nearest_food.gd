@@ -88,9 +88,8 @@ func argmax(array):
 	return max_index
 
 
-static func use_for_snake(snake, env):
+static func use_for_snake(snake, env, data={}):
 	var plan = PolicyNearestFood.new()
-	
 	env.add_child(plan)
 	snake.use_policy(plan)
 	

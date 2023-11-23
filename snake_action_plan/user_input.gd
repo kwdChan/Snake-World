@@ -29,9 +29,8 @@ func step(_snake):
 	return 
 	
 
-static func use_for_snake(_snake, _env):
+static func use_for_snake(_snake, _env, data={}):
 	var plan = PolicyUserInput.new()
-	
 	_env.add_child(plan)
 	_snake.use_policy(plan)
 	

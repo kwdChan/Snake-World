@@ -7,4 +7,9 @@ const Action := Types.Action
 func step(_snake: Snake) -> void:
 	action_ready.emit(Action.STAY)
 	
-
+func get_subclass():
+	pass
+	
+#func get_self_type():
+#
+#	return self.get_subclass()

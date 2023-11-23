@@ -9,7 +9,7 @@ const SNAKE_SCENE := preload('res://snake_node.tscn') as PackedScene
 # if idx is not 0, it means it is food 
 var idx = 0
 
-var _action_intervel := 0.15
+var _action_intervel := 0.05
 
 var policy: Policy
 
@@ -84,6 +84,11 @@ func perform_action(actioncode:Types.Action):
 func _on_node_eaten(node_idx):
 	if node_idx == 0:
 		dead.emit(self)
+		
+		# let the policy knows it died
+		nodes = []
+		policy.step(self)
+		
 		queue_free()
 	
 	nodes = nodes.filter(func (x): return (x.idx!=node_idx))
@@ -115,6 +120,10 @@ func get_inedible_parts() -> Array[Vector2i]:
 		return [get_head_grid()]
 	
 func get_head_grid() -> Vector2i:
+	if not len(nodes):
+		push_warning("zero-length snake: get_head_grid")
+		return Vector2i(0, 0)
+		
 	return nodes[0].grid_pos
 	
 func get_body_grids() -> Array[Vector2i]:
