@@ -1,4 +1,4 @@
-class_name PolicyDeepQLearning
+class_name PolicyDeepQLearning 
 extends Policy
 
 var ws_client: WSClient
@@ -32,18 +32,19 @@ func step(_snake: Snake):
 	
 	var new_len = len(_snake.nodes) 
 	data['rewards'] = (new_len - existing_len)
+	#data['rewards'] +=  new_len * 0.01
 	
-	var new_pos = _snake.nodes[0].grid_pos if new_len else Vector2i(0,0)
-	
-	if (last_pos == new_pos):
-		data['rewards'] -= 0.001
-	last_pos = new_pos
 		
 	if new_len == 0:
-		data['rewards'] = min(-50, data['rewards'] )
-	
+		data['rewards'] -= 5
+		
+	if new_len < existing_len:
+		data['rewards'] -= 0.2
+
+	data['rewards'] = float(data['rewards'])
+
+		
 	existing_len = new_len
-	
 	ws_client.send(
 		JSON.stringify(data), 
 		"deep_q_pre_extracted",
@@ -54,8 +55,10 @@ func step(_snake: Snake):
 func _on_message(receiver_id, tag, message):
 	if not receiver_id == id:
 		return 
-
-	print(Time.get_ticks_msec() - message.time)
+	var time_diff = Time.get_ticks_msec() - message.time
+	
+	if time_diff>0:
+		print(time_diff)
 	emit_signal("action_ready", message.action)
 	
 	

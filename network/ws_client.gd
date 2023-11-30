@@ -16,7 +16,7 @@ func _ready():
 	# TODO: can't do faster than 50ms? 
 	timer = Timer.new()
 	add_child(timer)
-	timer.set_wait_time(0.001)
+	timer.set_wait_time(0.01)
 	timer.start()
 	timer.timeout.connect(func(): poll())
 
@@ -45,7 +45,8 @@ func poll():
 
 func send(message, tag, receiver_id):
 
-	assert (state == WebSocketPeer.STATE_OPEN)
+	if not (state == WebSocketPeer.STATE_OPEN):
+		push_warning("WebSocketPeer closed")
 	socket.send_text(JSON.stringify({tag=tag, message=message, receiver_id=receiver_id}))
 	
 

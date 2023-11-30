@@ -9,7 +9,7 @@ const SNAKE_SCENE := preload('res://snake_node.tscn') as PackedScene
 # if idx is not 0, it means it is food 
 var idx = 0
 
-var _action_intervel := 0.05
+var _action_intervel := 0.01
 
 var policy: Policy
 

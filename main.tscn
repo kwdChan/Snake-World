@@ -17,10 +17,10 @@ script = ExtResource("1_1l1ld")
 
 [node name="SnakeTable" type="Tree" parent="."]
 layout_mode = 0
-offset_left = 758.0
-offset_top = 29.0
-offset_right = 1138.0
-offset_bottom = 461.0
+offset_left = 846.0
+offset_top = 41.0
+offset_right = 1143.0
+offset_bottom = 736.0
 focus_mode = 0
 columns = 3
 column_titles_visible = true
@@ -31,17 +31,17 @@ scroll_horizontal_enabled = false
 script = ExtResource("2_4x04g")
 
 [node name="Env" parent="." instance=ExtResource("1_w022d")]
-position = Vector2(20, 20)
+position = Vector2(37, 34)
 
 [node name="Vision" type="Node2D" parent="."]
-position = Vector2(1214, 318)
+position = Vector2(2068, 605)
 script = ExtResource("2_7ybtq")
 
 [node name="VisionControl" type="HBoxContainer" parent="Vision"]
-offset_left = -411.0
-offset_top = 156.0
-offset_right = -119.0
-offset_bottom = 196.0
+offset_left = -732.0
+offset_top = 121.0
+offset_right = -440.0
+offset_bottom = 161.0
 metadata/_edit_group_ = true
 
 [node name="VisionRotate" type="CheckBox" parent="Vision/VisionControl"]
@@ -56,10 +56,10 @@ text = "Heads Only"
 
 [node name="TestButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 903.0
-offset_top = 556.0
-offset_right = 941.0
-offset_bottom = 587.0
+offset_left = 1444.0
+offset_top = 783.0
+offset_right = 1482.0
+offset_bottom = 814.0
 text = "test"
 script = ExtResource("5_frw82")
 

@@ -4,7 +4,7 @@ signal snake_list_change
 
 # world parameters 
 const WORLD_PARAMS = {
-	SIZE_GRID = Vector2(70, 70), 
+	SIZE_GRID = Vector2(50, 50), 
 	GRID_SIZE_PIX = 10,
 	GRID_MARGIN = 0.1
 }
@@ -13,13 +13,14 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	FOOD_INTERVAL = 0.1
+	FOOD_INTERVAL = 0.1,
+	MAX_FOOD = 120
 }
 
 var N_SNAKES = {
-	PolicyDeepQLearning: 10, 
-	PolicyNearestFood: 0,
-	PolicyUserInput:1,
+	PolicyDeepQLearning: 0, 
+	PolicyNearestFoodRecorded: 1,
+	PolicyUserInput:0,
 }
 
 var all_snakes: Array[Snake] = []
@@ -27,10 +28,10 @@ var all_foods: Array[Snake] = []
 
 var snakes_of_policies = {
 	PolicyDeepQLearning: [],
-	PolicyNearestFood:[],
+	PolicyNearestFoodRecorded:[],
 	PolicyUserInput: []
 }
-
+var new_snake_policies = []
 
 @onready var world_boundry_grids: Array[Vector2i] = _cal_world_boundry_grids()
 @onready var ws_client := WSClient.new()
@@ -99,6 +100,7 @@ func new_snake(loc=null, policy = PolicyNearestFood):
 	)
 	add_child(snake)
 
+
 	policy.use_for_snake(snake, self, {ws_client=ws_client})
 	
 	snakes_of_policies[policy].append(snake)
@@ -113,8 +115,8 @@ func new_snake(loc=null, policy = PolicyNearestFood):
 	
 
 func _on_snake_dead(_snake: Snake):
-	new_snake(null, _snake.policy.get_script())
 	
+	new_snake_policies.append(_snake.policy.get_script())
 	
 	
 	
@@ -143,9 +145,11 @@ func draw_world_boundary():
 
 
 func _on_snake_spawn_timer_timeout():
+	if len(new_snake_policies):
+		new_snake(null, new_snake_policies.pop_back())
 	
-
-	new_food()
+	if len(get_all_foods()) < ECO_PARAMS.MAX_FOOD:
+		new_food()
 	$SnakeSpawnTimer.start()
 
 func get_edible_grids() -> Array[Vector2i]:
