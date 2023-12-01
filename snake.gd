@@ -17,6 +17,8 @@ var _env: Env
 
 var nodes: Array[SnakeNode] = []
 
+var action_pending := false 
+
 var colour: Color:
 	set(value):
 		colour = value
@@ -67,8 +69,6 @@ func as_food():
 	idx = 100000000000000
 	policy = null
 
-
-	
 func use_policy(_policy: Policy):
 	policy = _policy
 	policy.action_ready.connect(perform_action)
@@ -76,6 +76,7 @@ func use_policy(_policy: Policy):
 	$SnakeActionTimer.start()
 	
 func perform_action(actioncode:Types.Action):
+	action_pending = false
 	if not len(nodes):
 		push_warning("zero-length snake: perform_action")
 		return 
@@ -102,7 +103,17 @@ func add_new_node(new_node: SnakeNode):
 	nodes.append(new_node)
 	
 func _on_snake_action_timer_timeout():
-	if not policy: return 
+	if not policy: 
+		return 
+	
+	if action_pending:
+		push_warning("action pending")
+		
+	while action_pending:
+		# wait until the previous action is performed
+		# hopefully it doesn't block everything
+		pass
+	action_pending = true
 	policy.step(self)
 	$SnakeActionTimer.start()
 
