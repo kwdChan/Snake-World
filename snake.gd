@@ -19,6 +19,8 @@ var nodes: Array[SnakeNode] = []
 
 var action_pending := false 
 
+
+
 var colour: Color:
 	set(value):
 		colour = value
@@ -33,7 +35,6 @@ func _ready():
 func _process(_delta):
 
 	if Input.is_action_just_pressed("ui_down"):
-		
 
 		# TODO: check if nodes[0] exists
 		if not idx == 0:
@@ -77,10 +78,13 @@ func use_policy(_policy: Policy):
 	
 func perform_action(actioncode:Types.Action):
 	action_pending = false
+
 	if not len(nodes):
 		push_warning("zero-length snake: perform_action")
 		return 
 	nodes[0].action(actioncode)
+	
+
 	
 func _on_node_eaten(node_idx):
 	if node_idx == 0:
@@ -96,7 +100,6 @@ func _on_node_eaten(node_idx):
 	
 	## as food
 	if not len(nodes):
-		
 		queue_free()
 
 func add_new_node(new_node: SnakeNode):
@@ -116,7 +119,6 @@ func _on_snake_action_timer_timeout():
 	action_pending = true
 	policy.step(self)
 	$SnakeActionTimer.start()
-
 
 func get_edible_parts() -> Array[Vector2i]:
 	if idx > 0:
@@ -152,8 +154,9 @@ func get_body_grids() -> Array[Vector2i]:
 func _on_eat(obj: Object):
 	var food_colour: Color = obj.get("colour")
 	if food_colour:
-
 		colour = Color.from_hsv(hue_avg(food_colour.h,  colour.h, 1, len(nodes)), 1, 1, 1)
+
+	
 		
 func hue_avg(h1, h2, h1mag=1, h2mag=1):
 	var new_angle = (Vector2.from_angle(h1*TAU)*h1mag + Vector2.from_angle(h2*TAU)*h2mag).angle()

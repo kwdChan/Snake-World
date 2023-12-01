@@ -4,18 +4,56 @@ extends NoStupidMove
 var food_distance = 200
 var ws_client: WSClient
 
+
 @onready var id = str(get_instance_id())
 
 
-var existing_len: int:
-	set(v):
-		existing_len = v 
+var existing_pos: Vector2i
+
+var existing_len: int
 		
 func use_ws_client(_ws_client:WSClient):
 	ws_client = _ws_client
 	ws_client.message_received.connect(_on_message)
 	
-func step(_snake) :
+	
+func step(_snake):
+	var action = decide_what_action(_snake)
+	emit_signal("action_ready", action)
+	
+	# send to the python 
+	# sensory info 
+	var data = _snake.get_sensory_info()
+
+	
+	# time (for delay monitoring)
+	data['time'] = Time.get_ticks_msec()
+	
+	# rewards 
+	var new_len = len(_snake.nodes) 
+	var new_pos = _snake.nodes[0].grid_pos
+	
+	# there's one step delay before the snake knows it has eaten. so we have to detect it ourselves
+	var food_closest_dist = (data['edible'].map(func(vec): return abs(vec.x)+abs(vec.y))).min()
+	data['rewards'] = 0
+	if (food_closest_dist == 0) and (new_pos != existing_pos):
+		data['rewards'] = 1 
+		
+	# punishment
+	data['rewards'] += min(new_len-existing_len, 0)
+	existing_pos = new_pos
+	existing_len = new_len
+	
+	# action 
+	data['action'] = action
+	
+	ws_client.send(
+		JSON.stringify(data), 
+		"supervised",
+		id
+	)
+func decide_what_action(_snake) :
+	
 
 	var possible_moves = get_non_stupid_moves(_snake)
 	var possible_moves_ = possible_moves.duplicate()
@@ -40,8 +78,8 @@ func step(_snake) :
 
 	if not len(edible_grids):
 	
-		emit_signal("action_ready", possible_moves.pick_random())
-		return 
+		
+		return possible_moves.pick_random()
 	
 	var min_dist_idx = argmin(edible_grids.map(func(g):return (abs(g.x)+abs(g.y))))
 	
@@ -59,38 +97,18 @@ func step(_snake) :
 		
 	if (target.x == target.y) and (target.x==0):
 
-		emit_signal("action_ready", Action.STAY)
-		return 
+
+		return Action.STAY
 		
 	possible_moves = possible_moves.filter(func(x): return (x in allowed_moves))
 
 	if not len(possible_moves):
 		print(possible_moves_)
-		
-
-	emit_signal("action_ready", possible_moves.pick_random())
-
-
-	var data = _snake.get_sensory_info()
-
-	data['time'] = Time.get_ticks_msec()
 	
-	var new_len = len(_snake.nodes) 
-	data['rewards'] = max((new_len - existing_len), 0)
 
-	data['rewards'] = float(data['rewards'])
+	return possible_moves.pick_random()
 	
-	data['action'] = float(data['rewards'])
-		
-	existing_len = new_len
 
-	ws_client.send(
-		JSON.stringify(data), 
-		"supervised",
-		id
-	)
-
-	return
 	
 func argmin(array):
 	if array.size() == 0:
@@ -126,12 +144,9 @@ func _on_message(receiver_id, tag, message):
 		return 
 	var time_diff = Time.get_ticks_msec() - message.time
 	
-	if time_diff>0:
+	if time_diff>100:
 		print(time_diff)
 	#emit_signal("action_ready", message.action)
-	
-	
-
 
 static func use_for_snake(_snake, _env, data={}):
 	var plan = PolicyNearestFoodRecorded.new()

@@ -12,14 +12,17 @@ var open := false
 
 var timer: Timer
 func _ready():
-	
-	# TODO: can't do faster than 50ms? 
-	timer = Timer.new()
-	add_child(timer)
-	timer.set_wait_time(0.01)
-	timer.start()
-	timer.timeout.connect(func(): poll())
+	pass
+#	# TODO: can't do faster than 50ms? 
+#	timer = Timer.new()
+#	add_child(timer)
+#	timer.set_wait_time(0.01)
+#	timer.start()
+#	timer.timeout.connect(func(): poll())
 
+func _process(_delta):
+	# TODO: poll does not get run after the server is down 
+	poll()
 
 func poll():
 	if not open:
@@ -41,13 +44,16 @@ func poll():
 	elif state == WebSocketPeer.STATE_CLOSED:
 		open = false
 		socket_closed.emit()
-		set_process(false)
+
 
 func send(message, tag, receiver_id):
 
 	if not (state == WebSocketPeer.STATE_OPEN):
+
+	
 		push_warning("WebSocketPeer closed")
-	socket.send_text(JSON.stringify({tag=tag, message=message, receiver_id=receiver_id}))
+	else: 
+		socket.send_text(JSON.stringify({tag=tag, message=message, receiver_id=receiver_id}))
 	
 
 
