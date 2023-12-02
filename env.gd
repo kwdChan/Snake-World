@@ -13,13 +13,13 @@ const WORLD_PARAMS = {
 const SNAKE_SCENE := preload("res://snake.tscn") as PackedScene
 
 const ECO_PARAMS = {
-	FOOD_INTERVAL = 0.5,
+	FOOD_INTERVAL = 0.1,
 	MAX_FOOD = 120
 }
 
-var N_SNAKES = {
+var N_SNAKES = { 
 	PolicyDeepQLearning: 0, 
-	PolicyNearestFoodRecorded: 2,
+	PolicyNearestFoodRecorded: 1,
 	PolicyUserInput:0,
 }
 

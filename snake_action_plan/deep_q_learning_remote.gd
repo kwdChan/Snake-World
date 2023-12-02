@@ -60,9 +60,6 @@ func _on_message(receiver_id, tag, message):
 	if time_diff>0:
 		print(time_diff)
 	emit_signal("action_ready", message.action)
-	
-	
-
 
 static func use_for_snake(_snake, _env, data={}):
 	var plan = PolicyDeepQLearning.new()

@@ -18,13 +18,12 @@ func use_ws_client(_ws_client:WSClient):
 	
 	
 func step(_snake):
+	var data = _snake.get_sensory_info()
 	var action = decide_what_action(_snake)
-	emit_signal("action_ready", action)
+	
 	
 	# send to the python 
 	# sensory info 
-	var data = _snake.get_sensory_info()
-
 	
 	# time (for delay monitoring)
 	data['time'] = Time.get_ticks_msec()
@@ -52,6 +51,11 @@ func step(_snake):
 		"supervised",
 		id
 	)
+	emit_signal("action_ready", action)
+	
+	
+	
+	
 func decide_what_action(_snake) :
 	
 
