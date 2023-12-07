@@ -164,6 +164,7 @@ func _propergate_lengthen_signal():
 		lengthening.emit()
 
 func _propergate_eaten_signal(_idx):
+	
 
 	eaten.emit(idx)
 	#updated_position.emit(idx, null)
@@ -184,11 +185,15 @@ func _on_collision(area):
 	#print(self, area, idx, ",", area.idx)
 	if idx < area.idx:
 		
+		
 		area._propergate_eaten_signal(idx)
-		_propergate_lengthen_signal()
-		ate.emit(area)
+		
+		if not _snake == area._snake:
+			_propergate_lengthen_signal()
+			ate.emit(area)
 		if not idx == 0:
-			push_warning("A node with non 0 idx ate. idx: %s, area.idx %s"%[idx, area.idx])
+			#push_warning("A node with non 0 idx ate. idx: %s, area.idx %s"%[idx, area.idx])
+			pass
 		
 	elif (idx ==  area.idx) and (idx == 0):
 		#print(self, area)

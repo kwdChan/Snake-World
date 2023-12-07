@@ -9,7 +9,7 @@ const SNAKE_SCENE := preload('res://snake_node.tscn') as PackedScene
 # if idx is not 0, it means it is food 
 var idx = 0
 
-var _action_intervel := 0.01
+var _action_intervel := 0.1
 
 var policy: Policy
 
@@ -19,7 +19,9 @@ var nodes: Array[SnakeNode] = []
 
 var action_pending := false 
 
+var got_attacked := false
 
+var just_ate := false
 
 var colour: Color:
 	set(value):
@@ -32,6 +34,7 @@ func _ready():
 	$SnakeActionTimer.set_wait_time(_action_intervel)
 	$SnakeActionTimer.start()
 	
+
 func _process(_delta):
 
 	if Input.is_action_just_pressed("ui_down"):
@@ -84,6 +87,11 @@ func perform_action(actioncode:Types.Action):
 		return 
 	nodes[0].action(actioncode)
 	
+func if_got_attacked():
+	# for punishment 
+	var to_return = got_attacked
+	got_attacked = false
+	return to_return
 
 	
 func _on_node_eaten(node_idx):
@@ -95,7 +103,9 @@ func _on_node_eaten(node_idx):
 		policy.step(self)
 		
 		queue_free()
+	got_attacked = true
 	
+
 	nodes = nodes.filter(func (x): return (x.idx!=node_idx))
 	
 	## as food
@@ -110,15 +120,15 @@ func _on_snake_action_timer_timeout():
 		return 
 	
 	if action_pending:
-		push_warning("action pending")
+		#push_warning("action pending")
+		$SnakeActionTimer.wait_time = 0.01
+		$SnakeActionTimer.start()
 		
-	while action_pending:
-		# wait until the previous action is performed
-		# hopefully it doesn't block everything
-		pass
-	action_pending = true
-	policy.step(self)
-	$SnakeActionTimer.start()
+	else: 
+		action_pending = true
+		policy.step(self)
+		$SnakeActionTimer.wait_time = _action_intervel
+		$SnakeActionTimer.start()
 
 func get_edible_parts() -> Array[Vector2i]:
 	if idx > 0:
@@ -134,7 +144,7 @@ func get_inedible_parts() -> Array[Vector2i]:
 	
 func get_head_grid() -> Vector2i:
 	if not len(nodes):
-		push_warning("zero-length snake: get_head_grid")
+		#push_warning("zero-length snake: get_head_grid")
 		return Vector2i(0, 0)
 		
 	return nodes[0].grid_pos
@@ -152,11 +162,15 @@ func get_body_grids() -> Array[Vector2i]:
 	return pos
 
 func _on_eat(obj: Object):
+	just_ate = true
 	var food_colour: Color = obj.get("colour")
 	if food_colour:
 		colour = Color.from_hsv(hue_avg(food_colour.h,  colour.h, 1, len(nodes)), 1, 1, 1)
 
-	
+func if_just_ate():
+	var to_return = just_ate
+	just_ate = false
+	return to_return
 		
 func hue_avg(h1, h2, h1mag=1, h2mag=1):
 	var new_angle = (Vector2.from_angle(h1*TAU)*h1mag + Vector2.from_angle(h2*TAU)*h2mag).angle()
@@ -171,7 +185,7 @@ func hue_avg(h1, h2, h1mag=1, h2mag=1):
 
 func to_perspective(grids: Array[Vector2i], to_rotate=true) -> Array[Vector2i]:
 	if not len(nodes):
-		push_warning("zero len snake")
+		#push_warning("zero len snake")
 		return []
 	var origin = nodes[0].grid_pos
 	
